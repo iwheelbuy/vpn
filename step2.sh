@@ -52,7 +52,7 @@ cat << EOF
                 <key>CertificateType</key>
                 <string>RSA</string>
                 <key>ServerCertificateIssuerCommonName</key>
-                <string>${FQDN}</string>
+                <string>${CA}</string>
                 <key>EnablePFS</key>
                 <integer>1</integer>
                 <key>IKESecurityAssociationParameters</key>
