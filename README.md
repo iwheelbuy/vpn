@@ -19,7 +19,7 @@ scp -i YOUR_CERTIFICATE_NAME.pem admin@YOUR_IP_OR_DOMAIN:vpn.mobileconfig ./
 scp -i YOUR_CERTIFICATE_NAME.pem admin@YOUR_IP_OR_DOMAIN:client.p12 ./
 ssh -i YOUR_CERTIFICATE_NAME.pem admin@YOUR_IP_OR_DOMAIN -p 22
 sudo su
-rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig (не забудьте прибраться после скачивания)
+rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf client.p12 (не забудьте прибраться после скачивания)
 exit
 exit
 ```
