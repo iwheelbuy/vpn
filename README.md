@@ -51,7 +51,7 @@ exit
 /ip ipsec peer add address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 name=AWS profile=AWS
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=AWS peer=AWS policy-template-group=AWS
 /ip ipsec mode-config set [ find name=AWS ] connection-mark=AWS
-/ip firewall address-list add address=whatismyipaddress.com list=VPN add address=8.8.8.8 list=AWS
+/ip firewall address-list add address=whatismyipaddress.com list=AWS
 /ip firewall address-list add address=8.8.8.8 list=AWS
 /ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=AWS new-connection-mark=AWS passthrough=yes
 ```
