@@ -26,7 +26,7 @@ exit
 exit
 ```
 
-# Router OS (all traffic)
+# Router OS
 
 ```ruby
 /ip ipsec profile add name=AWS hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
@@ -36,20 +36,12 @@ exit
 /ip ipsec mode-config add name=AWS responder=no
 /ip ipsec peer add address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 name=AWS profile=AWS
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=AWS peer=AWS policy-template-group=AWS
-/ip firewall address-list add address=192.168.88.0/24 list=local
-/ip ipsec mode-config set [ find name=AWS ] src-address-list=local
 ```
-
-# Router OS (some sites)
-
 ```ruby
-/ip ipsec profile add name=AWS hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
-/ip ipsec proposal add name=AWS auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
-/ip ipsec policy group add name=AWS
-/ip ipsec policy add dst-address=0.0.0.0/0 group=AWS proposal=AWS src-address=0.0.0.0/0 template=yes
-/ip ipsec mode-config add name=AWS responder=no
-/ip ipsec peer add address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 name=AWS profile=AWS
-/ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=AWS peer=AWS policy-template-group=AWS
+/ip ipsec mode-config set [ find name=AWS ] src-address-list=local
+/ip firewall address-list add address=192.168.88.0/24 list=local
+```
+```ruby
 /ip ipsec mode-config set [ find name=AWS ] connection-mark=AWS
 /ip firewall address-list add address=whatismyipaddress.com list=AWS
 /ip firewall address-list add address=8.8.8.8 list=AWS
