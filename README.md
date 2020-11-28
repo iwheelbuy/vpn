@@ -29,6 +29,7 @@ exit
 # Router OS
 
 ```ruby
+/certificate import file-name=client.p12 passphrase=123
 /ip ipsec profile add name=AWS hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
 /ip ipsec proposal add name=AWS auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
 /ip ipsec policy group add name=AWS
