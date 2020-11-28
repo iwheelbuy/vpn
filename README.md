@@ -26,15 +26,16 @@ exit
 exit
 ```
 
-# Router OS
+# Router OS (all traffic)
 
 ```ruby
-/certificate import file-name=client.p12 passphrase=123
-/ip ipsec profile add name=aws_profile hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256 proposal-check=obey
-/ip ipsec proposal add name=aws_proposal auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
-/ip ipsec policy group add name=aws_policy_group
-/ip ipsec policy add group=aws_policy_group proposal=aws_proposal template=yes
-/ip ipsec mode-config add name=aws_mode_config responder=no
-/ip ipsec peer add name=aws_peer address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 profile=aws_profile
-/ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=aws_mode_config peer=aws_peer policy-template-group=aws_policy_group
+/ip ipsec profile add name=NordVPN hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
+/ip ipsec proposal add name=NordVPN auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
+/ip ipsec policy group add name=NordVPN
+/ip ipsec policy add dst-address=0.0.0.0/0 group=NordVPN proposal=NordVPN src-address=0.0.0.0/0 template=yes
+/ip ipsec mode-config add name=NordVPN responder=no
+/ip ipsec peer add address=18.159.120.244/32 exchange-mode=ike2 name=NordVPN profile=NordVPN
+/ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=NordVPN peer=NordVPN policy-template-group=NordVPN
+/ip firewall address-list add address=192.168.88.0/24 list=local
+/ip ipsec mode-config set [ find name=NordVPN ] src-address-list=local
 ```
