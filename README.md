@@ -37,5 +37,4 @@ exit
 /ip ipsec mode-config add name=aws_mode_config responder=no
 /ip ipsec peer add name=aws_peer address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 profile=aws_profile
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=aws_mode_config peer=aws_peer policy-template-group=aws_policy_group
-/ip firewall nat add chain=srcnat action=accept place-before=0 src-address=10.224.66.0/24 dst-address=10.10.10.0/24
 ```
