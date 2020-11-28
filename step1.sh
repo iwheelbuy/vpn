@@ -7,7 +7,7 @@ cd /etc/ipsec.d
 ipsec pki --gen --type rsa --size 4096 --outform pem > private/root.pem
 ipsec pki --self --ca --lifetime 3650 --in private/root.pem \
 --type rsa --digest sha256 \
---dn "CN=root" \
+--dn "CN=$1" \
 --outform pem > cacerts/root.pem
 ipsec pki --gen --type rsa --size 4096 --outform pem > private/server.pem
 ipsec pki --pub --in private/server.pem --type rsa |
