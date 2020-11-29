@@ -39,8 +39,8 @@ exit
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=AWS peer=AWS policy-template-group=AWS
 ```
 ```ruby
-/ip ipsec mode-config set [ find name=AWS ] src-address-list=local
 /ip firewall address-list add address=192.168.88.0/24 list=local
+/ip ipsec mode-config set [ find name=AWS ] src-address-list=local
 ```
 ```ruby
 /ip ipsec mode-config set [ find name=AWS ] connection-mark=AWS
