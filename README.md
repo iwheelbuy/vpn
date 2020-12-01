@@ -30,21 +30,21 @@ exit
 
 ```ruby
 /certificate import file-name=client.p12 passphrase=123
-/ip ipsec profile add name=AWS hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
-/ip ipsec proposal add name=AWS auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
-/ip ipsec policy group add name=AWS
-/ip ipsec policy add dst-address=0.0.0.0/0 group=AWS proposal=AWS src-address=0.0.0.0/0 template=yes
-/ip ipsec mode-config add name=AWS responder=no
-/ip ipsec peer add address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 name=AWS profile=AWS
-/ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=AWS peer=AWS policy-template-group=AWS
+/ip ipsec profile add name=aws hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
+/ip ipsec proposal add name=aws auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
+/ip ipsec policy group add name=aws
+/ip ipsec policy add dst-address=0.0.0.0/0 group=aws proposal=aws src-address=0.0.0.0/0 template=yes
+/ip ipsec mode-config add name=aws responder=no
+/ip ipsec peer add address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 name=aws profile=aws
+/ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=aws peer=aws policy-template-group=aws
 ```
 ```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=local
-/ip ipsec mode-config set [ find name=AWS ] src-address-list=local
+/ip ipsec mode-config set [ find name=aws ] src-address-list=local
 ```
 ```ruby
-/ip ipsec mode-config set [ find name=AWS ] connection-mark=AWS
-/ip firewall address-list add address=whatismyipaddress.com list=AWS
-/ip firewall address-list add address=8.8.8.8 list=AWS
-/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=AWS new-connection-mark=AWS passthrough=yes
+/ip ipsec mode-config set [ find name=aws ] connection-mark=aws
+/ip firewall address-list add address=whatismyipaddress.com list=aws-dst
+/ip firewall address-list add address=8.8.8.8 list=aws-dst
+/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=aws-dst new-connection-mark=aws passthrough=yes
 ```
