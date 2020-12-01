@@ -35,15 +35,13 @@ exit
 /ip ipsec policy group add name=aws
 /ip ipsec policy add dst-address=0.0.0.0/0 group=aws proposal=aws src-address=0.0.0.0/0 template=yes
 /ip ipsec mode-config add name=aws responder=no
-/ip ipsec peer add address=YOUR_IP_OR_DOMAIN/32 exchange-mode=ike2 name=aws profile=aws
+/ip ipsec peer add address=18.159.120.244/32 exchange-mode=ike2 name=aws profile=aws
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=aws peer=aws policy-template-group=aws
-/ip firewall mangle add action=mark-connection chain=forward comment="aws" ipsec-policy=out,ipsec new-connection-mark=ipsec 
-/ip firewall mangle add action=mark-connection chain=forward comment="aws" ipsec-policy=in,ipsec new-connection-mark=ipsec
-/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec comment="aws"
-```
-```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=aws-src
 /ip ipsec mode-config set [ find name=aws ] src-address-list=aws-src
+/ip firewall mangle add action=mark-connection chain=forward ipsec-policy=out,ipsec new-connection-mark=ipsec comment="aws"
+/ip firewall mangle add action=mark-connection chain=forward ipsec-policy=in,ipsec new-connection-mark=ipsec comment="aws"
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec comment="aws"
 ```
 ```ruby
 /ip ipsec mode-config set [ find name=aws ] connection-mark=aws
