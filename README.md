@@ -39,8 +39,7 @@ exit
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=aws peer=aws policy-template-group=aws
 ```
 
-### All traffic. Don't forget to update fasttrack.
-
+### Весь трафик. Не гибкое решение. Обновить fasttrack.
 ```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=aws-src
 /ip ipsec mode-config set [ find name=aws ] src-address-list=aws-src
@@ -49,8 +48,26 @@ exit
 /ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec comment="aws"
 ```
 
+### Весь трафик. Гибкое решение. Отключить fasttrack.
 ```ruby
 /ip ipsec mode-config set [ find name=aws ] connection-mark=aws
 /ip firewall address-list add address=192.168.88.0/24 list=aws-src
 /ip firewall mangle add action=mark-connection chain=prerouting src-address-list=aws-src new-connection-mark=aws passthrough=yes
+```
+
+### Только конкретные сайты. Гибкое решение. Отключить fasttrack.
+```ruby
+/ip ipsec mode-config set [ find name=aws ] connection-mark=aws
+/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=aws-dst new-connection-mark=aws passthrough=yes
+
+# protonmail
+
+/ip firewall address-list add address=www.protonmail.com list=aws-dst
+/ip firewall address-list add address=mail.protonmail.com list=aws-dst
+/ip firewall address-list add address=protonmail.com list=aws-dst
+/ip firewall address-list add address=protonmail.recruitee.com list=aws-dst
+
+# rutracker
+
+/ip firewall address-list add address=rutracker.org list=aws-dst
 ```
