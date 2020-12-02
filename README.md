@@ -39,6 +39,8 @@ exit
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=aws peer=aws policy-template-group=aws
 ```
 
+### All traffic. Don't forget to update fasttrack.
+
 ```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=aws-src
 /ip ipsec mode-config set [ find name=aws ] src-address-list=aws-src
