@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 CLIENT="client"
-SERVER="Private"
+SERVER="AWS"
 FQDN="$1"
 CA="root"
 
