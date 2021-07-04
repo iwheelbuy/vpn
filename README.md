@@ -13,8 +13,8 @@ ssh root@62.109.4.165 -p 22
 ./step2.sh 62.109.4.165 > vpn.mobileconfig
 exit
 exit
-scp -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165:vpn.mobileconfig ./
-scp -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165:client.p12 ./
+scp root@62.109.4.165:vpn.mobileconfig ./
+scp root@62.109.4.165:client.p12 ./
 # Не забудьте прибраться после скачивания
 ssh -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165 -p 22
 sudo su
