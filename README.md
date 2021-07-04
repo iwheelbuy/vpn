@@ -9,8 +9,7 @@ ssh root@62.109.4.165 -p 22
 rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/firstvds/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/firstvds/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
 ./step1.sh 62.109.4.165
-ssh -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165 -p 22
-sudo su
+ssh root@62.109.4.165 -p 22
 ./step2.sh 62.109.4.165 > vpn.mobileconfig
 exit
 exit
