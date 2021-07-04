@@ -83,7 +83,7 @@ iptables -A INPUT -j DROP
 iptables -A FORWARD -j DROP
 netfilter-persistent save
 netfilter-persistent reload
-cd /home/admin
+cd
 openssl pkcs12 -export -in /etc/ipsec.d/certs/client.pem -inkey /etc/ipsec.d/private/client.pem -certfile /etc/ipsec.d/cacerts/root.pem -name "client" -out client.p12
 chmod 777 client.p12
 openssl verify -CAfile /etc/ipsec.d/cacerts/root.pem /etc/ipsec.d/certs/server.pem
