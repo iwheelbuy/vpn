@@ -5,21 +5,19 @@
 # Terminal
 
 ```ruby
-chmod 400 YOUR_CERTIFICATE_NAME.pem
-ssh -i YOUR_CERTIFICATE_NAME.pem admin@natasha.krasnoyarsk.fvds.ru -p 22
-sudo su
-rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/develop/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/develop/step2.sh" && chmod +x step2.sh
+ssh root@62.109.4.165 -p 22
+rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/firstvds/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/firstvds/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
-./step1.sh natasha.krasnoyarsk.fvds.ru
-ssh -i YOUR_CERTIFICATE_NAME.pem admin@natasha.krasnoyarsk.fvds.ru -p 22
+./step1.sh 62.109.4.165
+ssh -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165 -p 22
 sudo su
-./step2.sh natasha.krasnoyarsk.fvds.ru > vpn.mobileconfig
+./step2.sh 62.109.4.165 > vpn.mobileconfig
 exit
 exit
-scp -i YOUR_CERTIFICATE_NAME.pem admin@natasha.krasnoyarsk.fvds.ru:vpn.mobileconfig ./
-scp -i YOUR_CERTIFICATE_NAME.pem admin@natasha.krasnoyarsk.fvds.ru:client.p12 ./
+scp -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165:vpn.mobileconfig ./
+scp -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165:client.p12 ./
 # Не забудьте прибраться после скачивания
-ssh -i YOUR_CERTIFICATE_NAME.pem admin@natasha.krasnoyarsk.fvds.ru -p 22
+ssh -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165 -p 22
 sudo su
 rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf client.p12
 exit
@@ -35,7 +33,7 @@ exit
 /ip ipsec policy group add name=firstvds
 /ip ipsec policy add dst-address=0.0.0.0/0 group=firstvds proposal=firstvds src-address=0.0.0.0/0 template=yes
 /ip ipsec mode-config add name=firstvds responder=no
-/ip ipsec peer add address=natasha.krasnoyarsk.fvds.ru/32 exchange-mode=ike2 name=firstvds profile=firstvds
+/ip ipsec peer add address=62.109.4.165/32 exchange-mode=ike2 name=firstvds profile=firstvds
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=firstvds peer=firstvds policy-template-group=firstvds
 ```
 
