@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 CLIENT="client"
-SERVER="AWS"
+SERVER="FirstVDS"
 FQDN="$1"
 CA="root"
 
