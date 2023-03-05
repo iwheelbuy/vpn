@@ -51,6 +51,11 @@ exit
 /ip firewall address-list add address=192.168.88.0/24 list=firstvds-src
 /ip firewall mangle add action=mark-connection chain=prerouting src-address-list=firstvds-src new-connection-mark=firstvds passthrough=yes
 ```
+но по-моему работает и так
+```ruby
+/ip ipsec mode-config set [ find name=firstvds ] connection-mark=firstvds
+/ip firewall mangle add action=mark-connection chain=prerouting new-connection-mark=firstvds passthrough=yes
+```
 
 ### Только конкретные сайты. Гибкое решение. Отключить fasttrack.
 ```ruby
