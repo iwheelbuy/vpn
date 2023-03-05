@@ -68,3 +68,10 @@ exit
 
 /ip firewall address-list add address=rutracker.org list=firstvds-dst
 ```
+
+### Установить лимит скорости на каждого клиента. Отключить fasttrack.
+```ruby
+/queue type add kind=pcq name=pcq-upload-custom pcq-classifier=src-address pcq-rate=2M
+/queue type add kind=pcq name=pcq-download-custom pcq-classifier=dst-address pcq-rate=2M
+/queue simple add name=Throttle-Each queue=pcq-upload-custom/pcq-download-custom target=192.168.1.0/24
+```
