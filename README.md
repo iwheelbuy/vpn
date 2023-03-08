@@ -42,6 +42,11 @@ ssh admin@192.168.88.1
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=firstvds peer=firstvds policy-template-group=firstvds
 ```
 
+### Очистить торрент адреса
+```ruby
+/ip firewall address-list remove [/ip firewall address-list find list=torrent]
+```
+
 ### Весь трафик. Не гибкое решение. Обновить fasttrack.
 ```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=firstvds-src
