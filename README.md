@@ -61,12 +61,12 @@ ssh admin@192.168.88.1
 ```
 Пометка конектов к сидам
 ```ruby
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes src-address-list=torrents-seeds comment="Mark in connection"
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes dst-address-list=torrents-seeds comment="Mark out connection"
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes src-address-list=torrents-seeds
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes dst-address-list=torrents-seeds
 ```
 Обновить fasttrack и поднять выше на место старого
 ```ruby
-/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!torrents comment="Fasttrack for non torrents"
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!torrents
 ```
 Направить торренты через IPsec
 ```ruby
@@ -82,9 +82,9 @@ ssh admin@192.168.88.1
 ```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=firstvds-src
 /ip ipsec mode-config set [ find name=firstvds ] src-address-list=firstvds-src
-/ip firewall mangle add action=mark-connection chain=forward ipsec-policy=out,ipsec new-connection-mark=ipsec comment="firstvds"
-/ip firewall mangle add action=mark-connection chain=forward ipsec-policy=in,ipsec new-connection-mark=ipsec comment="firstvds"
-/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec comment="firstvds"
+/ip firewall mangle add action=mark-connection chain=forward ipsec-policy=out,ipsec new-connection-mark=ipsec
+/ip firewall mangle add action=mark-connection chain=forward ipsec-policy=in,ipsec new-connection-mark=ipsec
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec
 ```
 
 ### Весь трафик. Гибкое решение. Отключить fasttrack.
