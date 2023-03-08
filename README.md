@@ -59,6 +59,11 @@ ssh admin@192.168.88.1
 /ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=DHT src-address-list=!torrents-seeds comment="DHT in"
 /ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=DHT src-address-list=torrents-local comment="DHT out"
 ```
+Пометка конектов к сидам
+```ruby
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes src-address-list=torrents-seeds comment="Mark in connection"
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes dst-address-list=torrents-seeds comment="Mark out connection"
+```
 
 ### Очистить торрент адреса
 ```ruby
