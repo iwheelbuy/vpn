@@ -54,10 +54,10 @@ ssh admin@192.168.88.1
 ```
 Адреса новых раздач в список торрент адресов
 ```ruby
-/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=BitTorrent src-address-list=!torrents-seeds
-/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=BitTorrent src-address-list=torrents-local
-/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=DHT src-address-list=!torrents-seeds
-/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=DHT src-address-list=torrents-local
+/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=1w chain=forward dst-address-list=torrents-local layer7-protocol=BitTorrent src-address-list=!torrents-seeds
+/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=1w chain=forward dst-address-list=!torrents-seeds layer7-protocol=BitTorrent src-address-list=torrents-local
+/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=1w chain=forward dst-address-list=torrents-local layer7-protocol=DHT src-address-list=!torrents-seeds
+/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=1w chain=forward dst-address-list=!torrents-seeds layer7-protocol=DHT src-address-list=torrents-local
 ```
 Пометка конектов к сидам
 ```ruby
