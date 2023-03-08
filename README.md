@@ -42,7 +42,7 @@ ssh admin@192.168.88.1
 /ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=firstvds peer=firstvds policy-template-group=firstvds
 ```
 
-### Правила для поиска торрентов
+### Tорренты через IPsec
 Адрес всей локальной сети
 ```ruby
 /ip firewall address-list add address=192.168.88.0/24 list=torrents-local
@@ -54,10 +54,10 @@ ssh admin@192.168.88.1
 ```
 Адреса новых раздач в список торрент адресов
 ```ruby
-/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=BitTorrent src-address-list=!torrents-seeds comment="BitTorrent in"
-/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=BitTorrent src-address-list=torrents-local comment="BitTorrent out"
-/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=DHT src-address-list=!torrents-seeds comment="DHT in"
-/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=DHT src-address-list=torrents-local comment="DHT out"
+/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=BitTorrent src-address-list=!torrents-seeds
+/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=BitTorrent src-address-list=torrents-local
+/ip firewall mangle add action=add-src-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=torrents-local layer7-protocol=DHT src-address-list=!torrents-seeds
+/ip firewall mangle add action=add-dst-to-address-list address-list=torrents-seeds address-list-timeout=none-dynamic chain=forward dst-address-list=!torrents-seeds layer7-protocol=DHT src-address-list=torrents-local
 ```
 Пометка конектов к сидам
 ```ruby
