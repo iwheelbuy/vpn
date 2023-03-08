@@ -25,6 +25,12 @@ exit
 
 # Router OS
 
+### Зайти на роутер через терминал macOS
+```ruby
+ssh admin@192.168.88.1
+```
+
+### Поднять IPsec
 ```ruby
 /certificate import file-name=client.p12 passphrase=123
 /ip ipsec profile add name=firstvds hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
