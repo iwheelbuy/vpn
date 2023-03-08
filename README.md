@@ -70,7 +70,7 @@ ssh admin@192.168.88.1
 ```
 Направить торренты через IPsec
 ```ruby
-/ip ipsec mode-config set [ find name=torrents-ipsec ] connection-mark=torrents
+/ip ipsec mode-config set [ find name=firstvds ] connection-mark=torrents
 ```
 
 ### Очистить торрент адреса
