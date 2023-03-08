@@ -66,7 +66,7 @@ ssh admin@192.168.88.1
 ```
 Обновить fasttrack и поднять выше на место старого
 ```ruby
-/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!torrents
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!torrents comment="Fasttrack for non torrents"
 ```
 
 ### Очистить торрент адреса
