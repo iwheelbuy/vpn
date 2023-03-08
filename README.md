@@ -68,6 +68,10 @@ ssh admin@192.168.88.1
 ```ruby
 /ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!torrents comment="Fasttrack for non torrents"
 ```
+Направить торренты через IPsec
+```ruby
+/ip ipsec mode-config set [ find name=torrents-ipsec ] connection-mark=torrents
+```
 
 ### Очистить торрент адреса
 ```ruby
