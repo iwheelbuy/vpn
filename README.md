@@ -75,7 +75,7 @@ ssh admin@192.168.88.1
 
 ### Очистить торрент адреса
 ```ruby
-/ip firewall address-list remove [/ip firewall address-list find list=torrent]
+/ip firewall address-list remove [/ip firewall address-list find list=torrents-seeds]
 ```
 
 ### Весь трафик. Не гибкое решение. Обновить fasttrack.
