@@ -64,6 +64,10 @@ ssh admin@192.168.88.1
 /ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes src-address-list=torrents-seeds comment="Mark in connection"
 /ip firewall mangle add action=mark-connection chain=forward new-connection-mark=torrents passthrough=yes dst-address-list=torrents-seeds comment="Mark out connection"
 ```
+Обновить fasttrack и поднять выше на место старого
+```ruby
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!torrents
+```
 
 ### Очистить торрент адреса
 ```ruby
