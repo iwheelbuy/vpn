@@ -64,6 +64,11 @@ ssh admin@192.168.88.1
 /ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes src-address-list=torrents-seeds
 /ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes dst-address-list=torrents-seeds
 ```
+Пометка конектов к русским сайтам, которые не открываются из-за бугра
+```ruby
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes src-address-list=russia
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes dst-address-list=russia
+```
 Обновить fasttrack и поднять выше на место старого
 ```ruby
 /ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!firstvds
@@ -114,6 +119,10 @@ ssh admin@192.168.88.1
 # rutracker
 
 /ip firewall address-list add address=rutracker.org list=firstvds-dst
+
+# russia
+
+/ip firewall address-list add address=www.pochta.ru list=russia
 ```
 
 ### Установить лимит скорости на каждого клиента. Отключить fasttrack.
