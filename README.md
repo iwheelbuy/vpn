@@ -1,6 +1,4 @@
-# Lightsail Debian 10.5 + Static IP
-
-![](firewall.png)
+# Debian 10.5 + Static IP
 
 # Terminal
 
@@ -44,6 +42,10 @@ ssh admin@192.168.88.1
 /ip ipsec peer add address=SERVER_IP/32 exchange-mode=ike2 name=MIKROTIK_IPSEC_NAMESPACE profile=MIKROTIK_IPSEC_NAMESPACE
 /ip ipsec identity add auth-method=digital-signature certificate=CERT_NAME.p12_0 generate-policy=port-strict mode-config=MIKROTIK_IPSEC_NAMESPACE peer=MIKROTIK_IPSEC_NAMESPACE policy-template-group=MIKROTIK_IPSEC_NAMESPACE
 ```
+### Если по какой-то причине policy не активировалась
+![](a.png)
+### То стоит удалить нужно активного пира и тогда policy активируется
+![](b.png)
 
 ### Tорренты через IPsec
 Адрес всей локальной сети
