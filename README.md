@@ -16,7 +16,7 @@ exit
 scp root@62.109.4.165:vpn.mobileconfig ./
 scp root@62.109.4.165:client.p12 ./
 # Не забудьте прибраться после скачивания
-ssh -i YOUR_CERTIFICATE_NAME.pem root@62.109.4.165 -p 22
+ssh root@62.109.4.165 -p 22
 sudo su
 rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf client.p12
 exit
