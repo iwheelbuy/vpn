@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 CLIENT="client"
-SERVER="FirstVDS"
+SERVER="$2"
 FQDN="$1"
 CA="root"
 

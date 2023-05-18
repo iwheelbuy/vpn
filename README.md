@@ -5,20 +5,20 @@
 # Terminal
 
 ```ruby
-ssh root@62.109.4.165 -p 22
-rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/firstvds/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/firstvds/step2.sh" && chmod +x step2.sh
+ssh root@SERV_IP -p 22
+rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/pq/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/pq/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
-./step1.sh 62.109.4.165
-ssh root@62.109.4.165 -p 22
-./step2.sh 62.109.4.165 > vpn.mobileconfig
+./step1.sh SERV_IP CERT_NAME
+ssh root@SERV_IP -p 22
+./step2.sh SERV_IP VPN_NAME > vpn.mobileconfig
 exit
 exit
-scp root@62.109.4.165:vpn.mobileconfig ./
-scp root@62.109.4.165:client.p12 ./
+scp root@SERV_IP:vpn.mobileconfig ./
+scp root@SERV_IP:CERT_NAME.p12 ./
 # Не забудьте прибраться после скачивания
-ssh root@62.109.4.165 -p 22
+ssh root@SERV_IP -p 22
 sudo su
-rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf client.p12
+rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf CERT_NAME.p12
 exit
 exit
 ```
@@ -32,14 +32,14 @@ ssh admin@192.168.88.1
 
 ### Поднять IPsec
 ```ruby
-/certificate import file-name=client.p12 passphrase=123
-/ip ipsec profile add name=firstvds hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
-/ip ipsec proposal add name=firstvds auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
-/ip ipsec policy group add name=firstvds
-/ip ipsec policy add dst-address=0.0.0.0/0 group=firstvds proposal=firstvds src-address=0.0.0.0/0 template=yes
-/ip ipsec mode-config add name=firstvds responder=no
-/ip ipsec peer add address=62.109.4.165/32 exchange-mode=ike2 name=firstvds profile=firstvds
-/ip ipsec identity add auth-method=digital-signature certificate=client.p12_0 generate-policy=port-strict mode-config=firstvds peer=firstvds policy-template-group=firstvds
+/certificate import file-name=CERT_NAME.p12 passphrase=123
+/ip ipsec profile add name=MIKROTIK_IPSEC_NAMESPACE hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
+/ip ipsec proposal add name=MIKROTIK_IPSEC_NAMESPACE auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
+/ip ipsec policy group add name=MIKROTIK_IPSEC_NAMESPACE
+/ip ipsec policy add dst-address=0.0.0.0/0 group=MIKROTIK_IPSEC_NAMESPACE proposal=MIKROTIK_IPSEC_NAMESPACE src-address=0.0.0.0/0 template=yes
+/ip ipsec mode-config add name=MIKROTIK_IPSEC_NAMESPACE responder=no
+/ip ipsec peer add address=SERV_IP/32 exchange-mode=ike2 name=MIKROTIK_IPSEC_NAMESPACE profile=MIKROTIK_IPSEC_NAMESPACE
+/ip ipsec identity add auth-method=digital-signature certificate=CERT_NAME.p12_0 generate-policy=port-strict mode-config=MIKROTIK_IPSEC_NAMESPACE peer=MIKROTIK_IPSEC_NAMESPACE policy-template-group=MIKROTIK_IPSEC_NAMESPACE
 ```
 
 ### Tорренты через IPsec
@@ -61,21 +61,21 @@ ssh admin@192.168.88.1
 ```
 Пометка конектов к сидам
 ```ruby
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes src-address-list=torrents-seeds
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes dst-address-list=torrents-seeds
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes src-address-list=torrents-seeds
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes dst-address-list=torrents-seeds
 ```
 Пометка конектов к русским сайтам, которые не открываются из-за бугра
 ```ruby
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes src-address-list=russia
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=firstvds passthrough=yes dst-address-list=russia
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes src-address-list=russia
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes dst-address-list=russia
 ```
 Обновить fasttrack и поднять выше на место старого
 ```ruby
-/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!firstvds
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!MIKROTIK_IPSEC_NAMESPACE
 ```
 Направить торренты через IPsec
 ```ruby
-/ip ipsec mode-config set [ find name=firstvds ] connection-mark=firstvds
+/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
 ```
 
 ### Очистить торрент адреса
@@ -85,8 +85,8 @@ ssh admin@192.168.88.1
 
 ### Весь трафик. Не гибкое решение. Обновить fasttrack.
 ```ruby
-/ip firewall address-list add address=192.168.88.0/24 list=firstvds-src
-/ip ipsec mode-config set [ find name=firstvds ] src-address-list=firstvds-src
+/ip firewall address-list add address=192.168.88.0/24 list=MIKROTIK_IPSEC_NAMESPACE-src
+/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] src-address-list=MIKROTIK_IPSEC_NAMESPACE-src
 /ip firewall mangle add action=mark-connection chain=forward ipsec-policy=out,ipsec new-connection-mark=ipsec
 /ip firewall mangle add action=mark-connection chain=forward ipsec-policy=in,ipsec new-connection-mark=ipsec
 /ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec
@@ -94,31 +94,31 @@ ssh admin@192.168.88.1
 
 ### Весь трафик. Гибкое решение. Отключить fasttrack.
 ```ruby
-/ip ipsec mode-config set [ find name=firstvds ] connection-mark=firstvds
-/ip firewall address-list add address=192.168.88.0/24 list=firstvds-src
-/ip firewall mangle add action=mark-connection chain=prerouting src-address-list=firstvds-src new-connection-mark=firstvds passthrough=yes
+/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
+/ip firewall address-list add address=192.168.88.0/24 list=MIKROTIK_IPSEC_NAMESPACE-src
+/ip firewall mangle add action=mark-connection chain=prerouting src-address-list=MIKROTIK_IPSEC_NAMESPACE-src new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes
 ```
 но по-моему работает и так
 ```ruby
-/ip ipsec mode-config set [ find name=firstvds ] connection-mark=firstvds
-/ip firewall mangle add action=mark-connection chain=prerouting new-connection-mark=firstvds passthrough=yes
+/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
+/ip firewall mangle add action=mark-connection chain=prerouting new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes
 ```
 
 ### Только конкретные сайты. Гибкое решение. Отключить fasttrack.
 ```ruby
-/ip ipsec mode-config set [ find name=firstvds ] connection-mark=firstvds
-/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=firstvds-dst new-connection-mark=firstvds passthrough=yes
+/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
+/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=MIKROTIK_IPSEC_NAMESPACE-dst new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes
 
 # protonmail
 
-/ip firewall address-list add address=www.protonmail.com list=firstvds-dst
-/ip firewall address-list add address=mail.protonmail.com list=firstvds-dst
-/ip firewall address-list add address=protonmail.com list=firstvds-dst
-/ip firewall address-list add address=protonmail.recruitee.com list=firstvds-dst
+/ip firewall address-list add address=www.protonmail.com list=MIKROTIK_IPSEC_NAMESPACE-dst
+/ip firewall address-list add address=mail.protonmail.com list=MIKROTIK_IPSEC_NAMESPACE-dst
+/ip firewall address-list add address=protonmail.com list=MIKROTIK_IPSEC_NAMESPACE-dst
+/ip firewall address-list add address=protonmail.recruitee.com list=MIKROTIK_IPSEC_NAMESPACE-dst
 
 # rutracker
 
-/ip firewall address-list add address=rutracker.org list=firstvds-dst
+/ip firewall address-list add address=rutracker.org list=MIKROTIK_IPSEC_NAMESPACE-dst
 
 # russia
 
