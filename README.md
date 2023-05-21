@@ -16,6 +16,8 @@ rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/LIGHTSA
 ./step1.sh LIGHTSAIL_SERVER_IP_OR_DOMAIN LIGHTSAIL_CERT_NAME
 ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@LIGHTSAIL_SERVER_IP_OR_DOMAIN -p 22
 sudo su
+cp /root/LIGHTSAIL_CERT_NAME.p12 /home/admin/LIGHTSAIL_CERT_NAME.p12
+rm /root/LIGHTSAIL_CERT_NAME.p12
 ./step2.sh LIGHTSAIL_SERVER_IP_OR_DOMAIN LIGHTSAIL_VPN_NAME > vpn.mobileconfig
 exit
 exit
