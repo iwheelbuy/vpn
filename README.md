@@ -35,14 +35,14 @@ exit
 
 ```ruby
 
-# To be replaced: SERVER_IP_OR_DOMAIN, CERT_NAME, VPN_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
+# To be replaced: SERVER_IP_OR_DOMAIN, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
 
 ssh root@SERVER_IP_OR_DOMAIN -p 22
 rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
 ./step1.sh SERVER_IP_OR_DOMAIN CERT_NAME
 ssh root@SERVER_IP_OR_DOMAIN -p 22
-./step2.sh SERVER_IP_OR_DOMAIN VPN_NAME > vpn.mobileconfig
+./step2.sh SERVER_IP_OR_DOMAIN > vpn.mobileconfig
 exit
 exit
 scp root@SERVER_IP_OR_DOMAIN:vpn.mobileconfig ./
