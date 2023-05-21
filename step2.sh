@@ -1,12 +1,12 @@
 #!/bin/zsh
 
 CLIENT="client"
-SERVER="$2"
+SERVER="AWS"
 FQDN="$1"
 CA="root"
 
 # WiFi SSIDs that do not require automatic connection to VPN on network change
-TRUSTED_SSIDS=("SSID1" "SSID2")
+TRUSTED_SSIDS=("MikroTik5GHz" "MikroTik2GHz" "MikroTik1GHz")
 
 PAYLOADCERTIFICATEUUID=$( cat /proc/sys/kernel/random/uuid )
 PKCS12PASSWORD=$( cat /proc/sys/kernel/random/uuid )
