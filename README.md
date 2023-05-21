@@ -1,6 +1,35 @@
-# Debian 10.5 + Static IP
+# Debian 10 + Static IP
 
-# Terminal
+# Lightsail
+
+![](firewall.png)
+
+```ruby
+
+# To be replaced: LIGHTSAIL_SERVER_IP_OR_DOMAIN, LIGHTSAIL_ACCESS_CERT, LIGHTSAIL_CERT_NAME, LIGHTSAIL_VPN_NAME, MIKROTIK_IPSEC_NAMESPACE, LIGHTSAIL_BRANCH_NAME
+
+chmod 400 LIGHTSAIL_ACCESS_CERT.pem
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@LIGHTSAIL_SERVER_IP_OR_DOMAIN -p 22
+sudo su
+rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/LIGHTSAIL_BRANCH_NAME/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/LIGHTSAIL_BRANCH_NAME/step2.sh" && chmod +x step2.sh
+# Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
+./step1.sh LIGHTSAIL_SERVER_IP_OR_DOMAIN LIGHTSAIL_CERT_NAME
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@LIGHTSAIL_SERVER_IP_OR_DOMAIN -p 22
+sudo su
+./step2.sh LIGHTSAIL_SERVER_IP_OR_DOMAIN LIGHTSAIL_VPN_NAME > vpn.mobileconfig
+exit
+exit
+scp -i LIGHTSAIL_ACCESS_CERT.pem admin@LIGHTSAIL_SERVER_IP_OR_DOMAIN:vpn.mobileconfig ./
+scp -i LIGHTSAIL_ACCESS_CERT.pem admin@LIGHTSAIL_SERVER_IP_OR_DOMAIN:LIGHTSAIL_CERT_NAME.p12 ./
+# Не забудьте прибраться после скачивания
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@LIGHTSAIL_SERVER_IP_OR_DOMAIN -p 22
+sudo su
+rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf LIGHTSAIL_CERT_NAME.p12
+exit
+exit
+```
+
+# Other VPS providers
 
 ```ruby
 
