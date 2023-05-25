@@ -6,25 +6,25 @@
 
 ```ruby
 
-# To be replaced: SERVER_IP_OR_DOMAIN, LIGHTSAIL_ACCESS_CERT, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
+# To be replaced: SERVER_IP, LIGHTSAIL_ACCESS_CERT, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
 
 chmod 400 LIGHTSAIL_ACCESS_CERT.pem
-ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP_OR_DOMAIN -p 22
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP -p 22
 sudo su
 rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
-./step1.sh SERVER_IP_OR_DOMAIN CERT_NAME
-ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP_OR_DOMAIN -p 22
+./step1.sh SERVER_IP CERT_NAME
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP -p 22
 sudo su
 cp /root/CERT_NAME.p12 /home/admin/CERT_NAME.p12
 rm /root/CERT_NAME.p12
-./step2.sh SERVER_IP_OR_DOMAIN > vpn.mobileconfig
+./step2.sh SERVER_IP > vpn.mobileconfig
 exit
 exit
-scp -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP_OR_DOMAIN:vpn.mobileconfig ./
-scp -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP_OR_DOMAIN:CERT_NAME.p12 ./
+scp -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP:vpn.mobileconfig ./
+scp -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP:CERT_NAME.p12 ./
 # Не забудьте прибраться после скачивания
-ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP_OR_DOMAIN -p 22
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP -p 22
 sudo su
 rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf CERT_NAME.p12
 exit
@@ -35,23 +35,20 @@ exit
 
 ```ruby
 
-# To be replaced: SERVER_IP_OR_DOMAIN, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
+# To be replaced: SERVER_IP, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
 
-ssh root@SERVER_IP_OR_DOMAIN -p 22
+ssh root@SERVER_IP -p 22
 rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
-./step1.sh SERVER_IP_OR_DOMAIN CERT_NAME
-ssh root@SERVER_IP_OR_DOMAIN -p 22
-./step2.sh SERVER_IP_OR_DOMAIN > vpn.mobileconfig
+./step1.sh SERVER_IP CERT_NAME
+ssh root@SERVER_IP -p 22
+./step2.sh SERVER_IP > vpn.mobileconfig
 exit
-exit
-scp root@SERVER_IP_OR_DOMAIN:vpn.mobileconfig ./
-scp root@SERVER_IP_OR_DOMAIN:CERT_NAME.p12 ./
+scp root@SERVER_IP:vpn.mobileconfig ./
+scp root@SERVER_IP:CERT_NAME.p12 ./
 # Не забудьте прибраться после скачивания
-ssh root@SERVER_IP_OR_DOMAIN -p 22
-sudo su
+ssh root@SERVER_IP -p 22
 rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf CERT_NAME.p12
-exit
 exit
 ```
 
@@ -70,7 +67,7 @@ ssh admin@192.168.88.1
 /ip ipsec policy group add name=MIKROTIK_IPSEC_NAMESPACE
 /ip ipsec policy add dst-address=0.0.0.0/0 group=MIKROTIK_IPSEC_NAMESPACE proposal=MIKROTIK_IPSEC_NAMESPACE src-address=0.0.0.0/0 template=yes
 /ip ipsec mode-config add name=MIKROTIK_IPSEC_NAMESPACE responder=no
-/ip ipsec peer add address=SERVER_IP_OR_DOMAIN/32 exchange-mode=ike2 name=MIKROTIK_IPSEC_NAMESPACE profile=MIKROTIK_IPSEC_NAMESPACE
+/ip ipsec peer add address=SERVER_IP/32 exchange-mode=ike2 name=MIKROTIK_IPSEC_NAMESPACE profile=MIKROTIK_IPSEC_NAMESPACE
 /ip ipsec identity add auth-method=digital-signature certificate=CERT_NAME.p12_0 generate-policy=port-strict mode-config=MIKROTIK_IPSEC_NAMESPACE peer=MIKROTIK_IPSEC_NAMESPACE policy-template-group=MIKROTIK_IPSEC_NAMESPACE
 ```
 ### Если по какой-то причине policy не активировалась
