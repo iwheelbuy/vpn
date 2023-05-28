@@ -116,6 +116,7 @@ ssh admin@192.168.88.1
 /ip firewall address-list add address=www.pochta.ru list=russia
 /ip firewall address-list add address=lk.ttk.ru list=russia
 /ip firewall address-list add address=ttk.ru list=russia
+/ip firewall address-list add address=whatismyipaddress.com list=russia
 ```
 
 ### Очистить торрент адреса
