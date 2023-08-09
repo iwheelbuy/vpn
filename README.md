@@ -6,27 +6,27 @@
 
 ```ruby
 
-# To be replaced: SERVER_IP, LIGHTSAIL_ACCESS_CERT, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
+# To be replaced: 45.155.125.94, LIGHTSAIL_ACCESS_CERT, rabisu3_cert, rabisu3_ipsec_namespace, rabisu3
 
 chmod 400 LIGHTSAIL_ACCESS_CERT.pem
-ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP -p 22
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@45.155.125.94 -p 22
 sudo su
-rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step2.sh" && chmod +x step2.sh
+rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/rabisu3/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/rabisu3/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
-./step1.sh SERVER_IP CERT_NAME
-ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP -p 22
+./step1.sh 45.155.125.94 rabisu3_cert
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@45.155.125.94 -p 22
 sudo su
-cp /root/CERT_NAME.p12 /home/admin/CERT_NAME.p12
-rm /root/CERT_NAME.p12
-./step2.sh SERVER_IP > vpn.mobileconfig
+cp /root/rabisu3_cert.p12 /home/admin/rabisu3_cert.p12
+rm /root/rabisu3_cert.p12
+./step2.sh 45.155.125.94 > vpn.mobileconfig
 exit
 exit
-scp -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP:vpn.mobileconfig ./
-scp -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP:CERT_NAME.p12 ./
+scp -i LIGHTSAIL_ACCESS_CERT.pem admin@45.155.125.94:vpn.mobileconfig ./
+scp -i LIGHTSAIL_ACCESS_CERT.pem admin@45.155.125.94:rabisu3_cert.p12 ./
 # Не забудьте прибраться после скачивания
-ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@SERVER_IP -p 22
+ssh -i LIGHTSAIL_ACCESS_CERT.pem admin@45.155.125.94 -p 22
 sudo su
-rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf CERT_NAME.p12
+rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf rabisu3_cert.p12
 exit
 exit
 ```
@@ -35,20 +35,20 @@ exit
 
 ```ruby
 
-# To be replaced: SERVER_IP, CERT_NAME, MIKROTIK_IPSEC_NAMESPACE, BRANCH_NAME
+# To be replaced: 45.155.125.94, rabisu3_cert, rabisu3_ipsec_namespace, rabisu3
 
-ssh root@SERVER_IP -p 22
-rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/BRANCH_NAME/step2.sh" && chmod +x step2.sh
+ssh root@45.155.125.94 -p 22
+rm -rf step1.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/rabisu3/step1.sh" && chmod +x step1.sh && rm -rf step2.sh && wget "https://raw.githubusercontent.com/iwheelbuy/vpn/rabisu3/step2.sh" && chmod +x step2.sh
 # Предложенные установки - Y, остальное - Enter. Пароль для сертификата = 123.
-./step1.sh SERVER_IP CERT_NAME
-ssh root@SERVER_IP -p 22
-./step2.sh SERVER_IP > vpn.mobileconfig
+./step1.sh 45.155.125.94 rabisu3_cert
+ssh root@45.155.125.94 -p 22
+./step2.sh 45.155.125.94 > vpn.mobileconfig
 exit
-scp root@SERVER_IP:vpn.mobileconfig ./
-scp root@SERVER_IP:CERT_NAME.p12 ./
+scp root@45.155.125.94:vpn.mobileconfig ./
+scp root@45.155.125.94:rabisu3_cert.p12 ./
 # Не забудьте прибраться после скачивания
-ssh root@SERVER_IP -p 22
-rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf CERT_NAME.p12
+ssh root@45.155.125.94 -p 22
+rm -rf step1.sh && rm -rf step2.sh && rm -rf vpn.mobileconfig && rm -rf rabisu3_cert.p12
 exit
 ```
 
@@ -61,14 +61,14 @@ ssh admin@192.168.88.1
 
 ### Поднять IPsec
 ```ruby
-/certificate import file-name=CERT_NAME.p12 passphrase=123
-/ip ipsec profile add name=MIKROTIK_IPSEC_NAMESPACE hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
-/ip ipsec proposal add name=MIKROTIK_IPSEC_NAMESPACE auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
-/ip ipsec policy group add name=MIKROTIK_IPSEC_NAMESPACE
-/ip ipsec policy add dst-address=0.0.0.0/0 group=MIKROTIK_IPSEC_NAMESPACE proposal=MIKROTIK_IPSEC_NAMESPACE src-address=0.0.0.0/0 template=yes
-/ip ipsec mode-config add name=MIKROTIK_IPSEC_NAMESPACE responder=no
-/ip ipsec peer add address=SERVER_IP/32 exchange-mode=ike2 name=MIKROTIK_IPSEC_NAMESPACE profile=MIKROTIK_IPSEC_NAMESPACE
-/ip ipsec identity add auth-method=digital-signature certificate=CERT_NAME.p12_0 generate-policy=port-strict mode-config=MIKROTIK_IPSEC_NAMESPACE peer=MIKROTIK_IPSEC_NAMESPACE policy-template-group=MIKROTIK_IPSEC_NAMESPACE
+/certificate import file-name=rabisu3_cert.p12 passphrase=123
+/ip ipsec profile add name=rabisu3_ipsec_namespace hash-algorithm=sha256 enc-algorithm=aes-128 dh-group=ecp256
+/ip ipsec proposal add name=rabisu3_ipsec_namespace auth-algorithms=sha256 enc-algorithms=aes-128-cbc pfs-group=ecp256
+/ip ipsec policy group add name=rabisu3_ipsec_namespace
+/ip ipsec policy add dst-address=0.0.0.0/0 group=rabisu3_ipsec_namespace proposal=rabisu3_ipsec_namespace src-address=0.0.0.0/0 template=yes
+/ip ipsec mode-config add name=rabisu3_ipsec_namespace responder=no
+/ip ipsec peer add address=45.155.125.94/32 exchange-mode=ike2 name=rabisu3_ipsec_namespace profile=rabisu3_ipsec_namespace
+/ip ipsec identity add auth-method=digital-signature certificate=rabisu3_cert.p12_0 generate-policy=port-strict mode-config=rabisu3_ipsec_namespace peer=rabisu3_ipsec_namespace policy-template-group=rabisu3_ipsec_namespace
 ```
 ### Если по какой-то причине policy не активировалась
 ![](a.png)
@@ -94,22 +94,22 @@ ssh admin@192.168.88.1
 ```
 Пометка конектов к сидам
 ```ruby
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes src-address-list=torrents-seeds
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes dst-address-list=torrents-seeds
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=rabisu3_ipsec_namespace passthrough=yes src-address-list=torrents-seeds
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=rabisu3_ipsec_namespace passthrough=yes dst-address-list=torrents-seeds
 ```
 Обновить fasttrack и поднять выше на место старого
 ```ruby
-/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!MIKROTIK_IPSEC_NAMESPACE
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!rabisu3_ipsec_namespace
 ```
 Направить торренты через IPsec
 ```ruby
-/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
+/ip ipsec mode-config set [ find name=rabisu3_ipsec_namespace ] connection-mark=rabisu3_ipsec_namespace
 ```
 
 ### Пометка конектов к русским сайтам, которые не открываются из-за бугра
 ```ruby
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes src-address-list=russia
-/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes dst-address-list=russia
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=rabisu3_ipsec_namespace passthrough=yes src-address-list=russia
+/ip firewall mangle add action=mark-connection chain=forward new-connection-mark=rabisu3_ipsec_namespace passthrough=yes dst-address-list=russia
 ```
 Список русских сайтов
 ```
@@ -126,8 +126,8 @@ ssh admin@192.168.88.1
 
 ### Весь трафик. Не гибкое решение. Обновить fasttrack.
 ```ruby
-/ip firewall address-list add address=192.168.88.0/24 list=MIKROTIK_IPSEC_NAMESPACE-src
-/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] src-address-list=MIKROTIK_IPSEC_NAMESPACE-src
+/ip firewall address-list add address=192.168.88.0/24 list=rabisu3_ipsec_namespace-src
+/ip ipsec mode-config set [ find name=rabisu3_ipsec_namespace ] src-address-list=rabisu3_ipsec_namespace-src
 /ip firewall mangle add action=mark-connection chain=forward ipsec-policy=out,ipsec new-connection-mark=ipsec
 /ip firewall mangle add action=mark-connection chain=forward ipsec-policy=in,ipsec new-connection-mark=ipsec
 /ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related connection-mark=!ipsec
@@ -135,31 +135,31 @@ ssh admin@192.168.88.1
 
 ### Весь трафик. Гибкое решение. Отключить fasttrack.
 ```ruby
-/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
-/ip firewall address-list add address=192.168.88.0/24 list=MIKROTIK_IPSEC_NAMESPACE-src
-/ip firewall mangle add action=mark-connection chain=prerouting src-address-list=MIKROTIK_IPSEC_NAMESPACE-src new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes
+/ip ipsec mode-config set [ find name=rabisu3_ipsec_namespace ] connection-mark=rabisu3_ipsec_namespace
+/ip firewall address-list add address=192.168.88.0/24 list=rabisu3_ipsec_namespace-src
+/ip firewall mangle add action=mark-connection chain=prerouting src-address-list=rabisu3_ipsec_namespace-src new-connection-mark=rabisu3_ipsec_namespace passthrough=yes
 ```
 но по-моему работает и так
 ```ruby
-/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
-/ip firewall mangle add action=mark-connection chain=prerouting new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes
+/ip ipsec mode-config set [ find name=rabisu3_ipsec_namespace ] connection-mark=rabisu3_ipsec_namespace
+/ip firewall mangle add action=mark-connection chain=prerouting new-connection-mark=rabisu3_ipsec_namespace passthrough=yes
 ```
 
 ### Только конкретные сайты. Гибкое решение. Отключить fasttrack.
 ```ruby
-/ip ipsec mode-config set [ find name=MIKROTIK_IPSEC_NAMESPACE ] connection-mark=MIKROTIK_IPSEC_NAMESPACE
-/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=MIKROTIK_IPSEC_NAMESPACE-dst new-connection-mark=MIKROTIK_IPSEC_NAMESPACE passthrough=yes
+/ip ipsec mode-config set [ find name=rabisu3_ipsec_namespace ] connection-mark=rabisu3_ipsec_namespace
+/ip firewall mangle add action=mark-connection chain=prerouting dst-address-list=rabisu3_ipsec_namespace-dst new-connection-mark=rabisu3_ipsec_namespace passthrough=yes
 
 # protonmail
 
-/ip firewall address-list add address=www.protonmail.com list=MIKROTIK_IPSEC_NAMESPACE-dst
-/ip firewall address-list add address=mail.protonmail.com list=MIKROTIK_IPSEC_NAMESPACE-dst
-/ip firewall address-list add address=protonmail.com list=MIKROTIK_IPSEC_NAMESPACE-dst
-/ip firewall address-list add address=protonmail.recruitee.com list=MIKROTIK_IPSEC_NAMESPACE-dst
+/ip firewall address-list add address=www.protonmail.com list=rabisu3_ipsec_namespace-dst
+/ip firewall address-list add address=mail.protonmail.com list=rabisu3_ipsec_namespace-dst
+/ip firewall address-list add address=protonmail.com list=rabisu3_ipsec_namespace-dst
+/ip firewall address-list add address=protonmail.recruitee.com list=rabisu3_ipsec_namespace-dst
 
 # rutracker
 
-/ip firewall address-list add address=rutracker.org list=MIKROTIK_IPSEC_NAMESPACE-dst
+/ip firewall address-list add address=rutracker.org list=rabisu3_ipsec_namespace-dst
 ```
 
 ### Установить лимит скорости на каждого клиента. Отключить fasttrack.
