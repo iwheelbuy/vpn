@@ -1,0 +1,10 @@
+.DS_Store
+*.p12
+*.mobileconfig
+*.pcap
+*.backup
+*.rsc
+*.export
+*.bin
+*.cfg
+*.conf
