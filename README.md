@@ -142,6 +142,17 @@ P12_PASSWORD="другой-пароль" ./step1.sh 185.255.93.244
 
 ```routeros
 /certificate import file-name=turkey-v1-client.p12 passphrase=123
+/tool fetch url="https://letsencrypt.org/certs/isrgrootx1.pem" dst-path=isrgrootx1.pem
+/certificate import file-name=isrgrootx1.pem
+/certificate set [find where common-name~"ISRG"] trusted=yes
+/tool fetch url="http://r13.i.lencr.org/" dst-path=letsencrypt-r13.der
+```
+
+После `fetch` импортировать `R13` отдельной командой. На prompt `passphrase:` ничего не вводить, просто нажать Enter:
+
+```routeros
+/certificate import file-name=letsencrypt-r13.der
+/certificate set [find where common-name~"R13"] trusted=yes
 /ip ipsec profile add name=turkey-v1 hash-algorithm=sha256 enc-algorithm=aes-256 dh-group=modp2048
 /ip ipsec proposal add name=turkey-v1 auth-algorithms=sha256 enc-algorithms=aes-256-cbc pfs-group=none
 /ip ipsec policy group add name=turkey-v1
@@ -151,9 +162,23 @@ P12_PASSWORD="другой-пароль" ./step1.sh 185.255.93.244
 /ip ipsec identity add auth-method=digital-signature certificate=turkey-v1-client.p12_0 generate-policy=port-strict mode-config=turkey-v1 peer=turkey-v1 policy-template-group=turkey-v1
 ```
 
-Если RouterOS не доверяет серверному Let's Encrypt сертификату, импортировать актуальный ISRG root/intermediate certificate в MikroTik и отметить его trusted. Это отдельная ручная проверка, потому что набор встроенных CA зависит от версии RouterOS.
+Проверка, что базовый tunnel поднялся:
 
-Более длинные operational snippets для selective/full tunnel лежат в [docs/routeros-reference.md](/Users/macuser/Development/vpn1/docs/routeros-reference.md).
+```routeros
+/ip ipsec active-peers print detail
+/ip ipsec installed-sa print detail
+```
+
+Успешное состояние: `active-peers state=established`, `installed-sa state=mature`.
+
+После базового tunnel есть несколько режимов маршрутизации:
+
+- весь трафик одного устройства через VPN через `src-address-list`;
+- конкретные сайты через `address-list` + `connection-mark`;
+- torrent heuristic через старые `layer7`/peer address-list правила;
+- full tunnel для всей LAN.
+
+Подробные operational snippets лежат в [docs/routeros-reference.md](/Users/macuser/Development/vpn1/docs/routeros-reference.md).
 
 ## Что делает step1.sh
 

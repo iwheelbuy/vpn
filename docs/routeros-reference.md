@@ -12,6 +12,17 @@ ssh admin@192.168.88.1
 
 ```sh
 /certificate import file-name=turkey-v1-client.p12 passphrase=123
+/tool fetch url="https://letsencrypt.org/certs/isrgrootx1.pem" dst-path=isrgrootx1.pem
+/certificate import file-name=isrgrootx1.pem
+/certificate set [find where common-name~"ISRG"] trusted=yes
+/tool fetch url="http://r13.i.lencr.org/" dst-path=letsencrypt-r13.der
+```
+
+Важно: `R13` импортировать отдельной командой. На prompt `passphrase:` ничего не вводить, просто нажать Enter. Если дать `import` и следующие команды одной пачкой, RouterOS может проглотить следующую строку как passphrase, и `R13` не появится.
+
+```sh
+/certificate import file-name=letsencrypt-r13.der
+/certificate set [find where common-name~"R13"] trusted=yes
 /ip ipsec profile add name=turkey-v1 hash-algorithm=sha256 enc-algorithm=aes-256 dh-group=modp2048
 /ip ipsec proposal add name=turkey-v1 auth-algorithms=sha256 enc-algorithms=aes-256-cbc pfs-group=none
 /ip ipsec policy group add name=turkey-v1
@@ -23,7 +34,22 @@ ssh admin@192.168.88.1
 
 Если endpoint меняется, заменить `185.255.93.244/32` на актуальный IP VPS.
 
-Если RouterOS v6 не доверяет серверному Let's Encrypt сертификату, импортировать актуальный ISRG root/intermediate certificate в `/certificate` и выставить ему `trusted=yes`. Это зависит от конкретной версии RouterOS и должно проверяться на живом роутере.
+Для server certificate от Let's Encrypt на RouterOS v6 уже подтвержденно понадобились `ISRG Root X1` и intermediate `R13`. Без `R13` tunnel падал с ошибками `unable to get local issuer certificate(20)` и `can't verify peer's certificate from store`.
+
+Проверка:
+
+```sh
+/certificate print
+/ip ipsec active-peers print detail
+/ip ipsec installed-sa print detail
+/log print where topics~"ipsec" && message~"unable|issuer|verify|authorize|failed|established|mature"
+```
+
+Успех выглядит так:
+
+- `active-peers state=established`;
+- `installed-sa state=mature`;
+- в логе есть `peer authorized`.
 
 Если policy по какой-то причине не активировалась, historical note такой: иногда помогает удалить нужного активного peer, после чего policy активируется заново.
 
@@ -31,6 +57,85 @@ ssh admin@192.168.88.1
 
 - [a.png](/Users/macuser/Development/vpn1/a.png)
 - [b.png](/Users/macuser/Development/vpn1/b.png)
+
+## Routing Modes
+
+После того как базовый IKEv2/IPsec tunnel поднят, есть несколько способов выбрать, какой трафик отправлять через VPN.
+
+Практический порядок проверки:
+
+1. Сначала один конкретный клиент через `src-address-list`.
+2. Потом selected sites через `address-list` и `connection-mark`.
+3. Потом более сложные эвристики вроде torrent detection.
+4. Full tunnel для всей LAN только если точно понятно, что сервер и канал тянут.
+
+### One Client Through VPN
+
+Самый простой и надежный режим: все соединения одного устройства идут через VPN.
+
+```sh
+/ip firewall address-list add list=turkey-v1-clients address=192.168.88.253
+/ip ipsec mode-config set [find name=turkey-v1] connection-mark="" src-address-list=turkey-v1-clients
+/ip firewall connection remove [find]
+/ip ipsec peer disable [find name=turkey-v1]
+/ip ipsec peer enable [find name=turkey-v1]
+```
+
+Проверка:
+
+```sh
+/ip ipsec policy print detail
+/ip ipsec active-peers print detail
+/ip ipsec installed-sa print detail
+```
+
+Ожидаемо появляется dynamic policy вида `src-address=10.10.10.x/32 dst-address=0.0.0.0/0`.
+
+Откат:
+
+```sh
+/ip ipsec mode-config set [find name=turkey-v1] src-address-list="" connection-mark=""
+/ip firewall address-list remove [find list=turkey-v1-clients]
+```
+
+### Selected Sites Through VPN
+
+Исторический режим из старого README: домены добавляются в `address-list`, соединения к ним получают `connection-mark`, а `mode-config` отправляет этот mark в IPsec.
+
+```sh
+/ip firewall address-list add list=turkey-v1-sites address=rzd.ru
+/ip firewall address-list add list=turkey-v1-sites address=www.rzd.ru
+/ip firewall address-list add list=turkey-v1-sites address=whatismyip.com
+/ip firewall address-list add list=turkey-v1-sites address=www.whatismyip.com
+/ip firewall mangle add chain=prerouting dst-address-list=turkey-v1-sites action=mark-connection new-connection-mark=turkey-v1 passthrough=yes
+/ip ipsec mode-config set [find name=turkey-v1] src-address-list="" connection-mark=turkey-v1
+```
+
+Если включен `fasttrack`, для теста его лучше отключить:
+
+```sh
+/ip firewall filter disable [find action=fasttrack-connection]
+/ip firewall connection remove [find]
+```
+
+Проверка:
+
+```sh
+/ip firewall address-list print where list=turkey-v1-sites
+/ip firewall mangle print stats where new-connection-mark=turkey-v1
+/ip firewall connection print detail where connection-mark=turkey-v1
+/ip ipsec installed-sa print detail
+```
+
+В живой проверке на текущем Turkey v1 path этот режим успешно маркировал соединения (`connection-mark=turkey-v1`), но data-plane до VPS еще требует отдельной проверки. Поэтому для надежного первого включения предпочтительнее `src-address-list` на конкретного клиента.
+
+Откат:
+
+```sh
+/ip firewall mangle disable [find new-connection-mark=turkey-v1]
+/ip firewall address-list remove [find list=turkey-v1-sites]
+/ip ipsec mode-config set [find name=turkey-v1] connection-mark=""
+```
 
 ## Torrents Through IPsec
 
